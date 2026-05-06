@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/numberDisplayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="120sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="48dp"
+        android:textColor="#2196F3" />
+
+    <Button
+        android:id="@+id/incrementActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="➕ INCRÉMENTER"
+        android:textSize="18sp"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/decrementActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="➖ DÉCRÉMENTER"
+        android:textSize="18sp"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/resetActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🔄 RÉINITIALISER"
+        android:textSize="18sp"
+        android:padding="16dp" />
+
+</LinearLayout>
