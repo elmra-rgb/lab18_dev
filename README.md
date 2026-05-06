@@ -399,16 +399,6 @@ public class MainActivityWithoutViewModel extends AppCompatActivity {
 - **MVVM** : séparation UI (View) / Logique métier (ViewModel)
 - **Jetpack 2.10.0** : version stable officielle 2026
 
-## Résumé des captures d'écran
-
-| Capture | Description |
-|---------|-------------|
-| `pic1.png` | Écran initial au lancement de l'application (compteur = 0) |
-| `pic2.png` | Après plusieurs clics sur INCRÉMENTER (exemple: compteur = 5) |
-| `pic3.png` | Après clics sur DÉCRÉMENTER (exemple: compteur = 3) |
-| `pic4.png` | Après clic sur RÉINITIALISER (retour à 0) |
-| `pic6.png` | **Démonstration clé** : Décrémentation + Rotation d'écran → le compteur conserve sa valeur avant et après rotation |
-
 ---
 
 **Auteur** : ELHEZZAM RANIA  
