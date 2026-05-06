@@ -4,9 +4,9 @@
 
 Une application Android démontrant la problématique de perte de données lors des rotations d'écran et la solution moderne avec **ViewModel** + **LiveData** (Jetpack 2.10.0). L'application permet d'incrémenter, décrémenter et réinitialiser un compteur qui survit automatiquement aux changements de configuration.
 
-| Écran initial | Après incrémentation | Après décrémentation | Après réinitialisation |
-|---------------|---------------------|---------------------|----------------------|
-| <img src="screens/pic1.png" width="200"> | <img src="screens/pic2.png" width="200"> | <img src="screens/pic3.png" width="200"> | <img src="screens/pic4.png" width="200"> |
+| Écran initial | Après incrémentation | Après décrémentation | Après réinitialisation | Rotation + Décrémentation |
+|---------------|---------------------|---------------------|----------------------|--------------------------|
+| <img src="screens/pic1.png" width="180"> | <img src="screens/pic2.png" width="180"> | <img src="screens/pic3.png" width="180"> | <img src="screens/pic4.png" width="180"> | <img src="screens/pic5.png" width="180"> |
 
 ## Fonctionnalités
 
@@ -24,6 +24,10 @@ Dans une application Android classique **sans ViewModel**, une rotation d'écran
 2. Recréation d'une nouvelle Activity (`onCreate`)
 3. **Perte totale** de toutes les variables d'instance
 4. Nécessité de `onSaveInstanceState()` (solution limitée aux types primitifs)
+
+### Capture d'écran pic6 : Rotation après décrémentation
+
+La capture `pic6.png` illustre le comportement attendu : après avoir décrémenté plusieurs fois puis effectué une rotation d'écran, le compteur conserve sa valeur (exemple : passage de 5 à 3 après décrémentations, rotation, et la valeur 3 reste affichée). Ceci démontre parfaitement la puissance du ViewModel qui préserve l'état même après rotation.
 
 ## La solution : ViewModel + LiveData
 
@@ -266,6 +270,74 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
+### 5. Version sans ViewModel (démonstration) – `MainActivityWithoutViewModel.java`
+
+```java
+package com.example.lab18_dev;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+/**
+ * VERSION SANS VIEWMODEL - DÉMONSTRATION DU PROBLÈME
+ * Cette version montre pourquoi les variables classiques échouent lors des rotations
+ * À UTILISER UNIQUEMENT POUR COMPARAISON AVEC LA VERSION PRINCIPALE
+ */
+public class MainActivityWithoutViewModel extends AppCompatActivity {
+
+    private int counterValue = 0;  // ← PERDUE à chaque rotation !
+    private TextView counterDisplayText;
+    private Button incrementButton, decrementButton, resetButton;
+    private static final String COUNTER_SAVE_KEY = "saved_counter_value";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        counterDisplayText = findViewById(R.id.numberDisplayText);
+        incrementButton = findViewById(R.id.incrementActionButton);
+        decrementButton = findViewById(R.id.decrementActionButton);
+        resetButton = findViewById(R.id.resetActionButton);
+        
+        // RESTAURATION MANUELLE (limité aux types primitifs)
+        if (savedInstanceState != null) {
+            counterValue = savedInstanceState.getInt(COUNTER_SAVE_KEY, 0);
+        }
+        
+        updateDisplay();
+        
+        incrementButton.setOnClickListener(v -> {
+            counterValue++;
+            updateDisplay();
+        });
+        
+        decrementButton.setOnClickListener(v -> {
+            counterValue--;
+            updateDisplay();
+        });
+        
+        resetButton.setOnClickListener(v -> {
+            counterValue = 0;
+            updateDisplay();
+        });
+    }
+    
+    private void updateDisplay() {
+        counterDisplayText.setText(String.valueOf(counterValue));
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(COUNTER_SAVE_KEY, counterValue);
+    }
+}
+```
+
 ## Comment exécuter l'application
 
 1. **Créer un projet** Android Studio avec "Empty Views Activity"
@@ -279,14 +351,16 @@ public class MainActivity extends AppCompatActivity {
 9. **Synchroniser** le projet (Sync Now)
 10. **Compiler** et exécuter sur émulateur ou appareil physique
 
-## Tests à réaliser
+## Tests à réaliser (dont pic6)
 
 | Test | Procédure | Résultat attendu |
 |------|-----------|------------------|
-| **Rotation d'écran** | Incrémenter 15x → Rotation (Ctrl+F11) | Le compteur reste à 15 ✅ |
-| **Changement de thème** | Activer mode nuit → Rotation | Données persistantes ✅ |
+| **Écran initial** | Lancer l'application | Compteur affiche 0 (pic1) ✅ |
+| **Incrémentation** | Clic plusieurs fois sur INCRÉMENTER | Augmentation progressive (pic2) ✅ |
+| **Décrémentation** | Clic sur DÉCRÉMENTER | Diminution progressive (pic3) ✅ |
+| **Réinitialisation** | Clic sur RÉINITIALISER | Retour à 0 (pic4) ✅ |
+| **Rotation + Décrémentation** | Décrémenter plusieurs fois → Rotation d'écran (Ctrl+F11) → Décrémenter à nouveau | Valeur conservée après rotation (pic6) ✅ |
 | **Process Death** | `adb shell am kill` → Relancer l'app | Compteur intact ✅ |
-| **Comparaison** | Lancer version sans ViewModel | Perte des données ❌ |
 
 ## Tableau comparatif
 
@@ -324,6 +398,16 @@ public class MainActivity extends AppCompatActivity {
 - **LifecycleOwner** : Activity/Fragment qui possède un cycle de vie
 - **MVVM** : séparation UI (View) / Logique métier (ViewModel)
 - **Jetpack 2.10.0** : version stable officielle 2026
+
+## Résumé des captures d'écran
+
+| Capture | Description |
+|---------|-------------|
+| `pic1.png` | Écran initial au lancement de l'application (compteur = 0) |
+| `pic2.png` | Après plusieurs clics sur INCRÉMENTER (exemple: compteur = 5) |
+| `pic3.png` | Après clics sur DÉCRÉMENTER (exemple: compteur = 3) |
+| `pic4.png` | Après clic sur RÉINITIALISER (retour à 0) |
+| `pic6.png` | **Démonstration clé** : Décrémentation + Rotation d'écran → le compteur conserve sa valeur avant et après rotation |
 
 ---
 
